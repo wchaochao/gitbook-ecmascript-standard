@@ -19,15 +19,14 @@
     "toggle-chapters",
     "include-codeblock",
     "anchors",
-    "anchor-navigation-ex",
-    "todo"
+    "anchor-navigation-ex"
   ],
   "pluginsConfig": {
     "disqus": {
       "shortName": "https-wchaochao-gitbooks-io-webbook-content"
     },
     "github": {
-      "url": "https://github.com/wchaochao/gitbook-init"
+      "url": "https://github.com/wchaochao/gitbook-ecmascript-standard"
     },
     "sharing": {
       "weibo": false,
