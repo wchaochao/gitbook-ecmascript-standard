@@ -24,7 +24,7 @@
 
 | 组成 | 类型 | 描述 |
 | --- | --- | --- |
-| base value | Undefined \| Boolean \| String \| Number \| Object \| Environment Record | 基值 |
+| base value | Undefined、Boolean、String、Number、Object、Environment Record | 基值 |
 | referenced name | String | 引用名称 |
 | strict reference  | Boolean | 是否是严格引用 |
 
@@ -104,8 +104,8 @@ reference = {
 | GetReferencedName(V)  | 获取引用名称 |
 | IsStrictReference(V)  | 是否是严格引用 |
 | IsUnresolvableReference(V)  | 是否是Unresolvable引用，即基值是否是Undefined |
-| IsPropertyReference(V)  | 是否是属性引用，即基值是否是Boolean \| String \| Number \| Object |
-| HasPrimitiveBase(V)  | 基值是否是原始值，即Boolean \| String \| Number |
+| IsPropertyReference(V)  | 是否是属性引用，即基值是否是Boolean、String、Number、Object |
+| HasPrimitiveBase(V)  | 基值是否是原始值，即Boolean、String、Number |
 
 #### GetValue(V)
 
