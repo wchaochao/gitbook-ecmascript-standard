@@ -1654,7 +1654,7 @@ arr.[[DefineOwnProperty]]('length', {
 
 ### 实例方法
 
-#### A.[[DefineOwnProperty]](P, Desc, Throw )
+#### A.[[DefineOwnProperty]] (P, Desc, Throw )
 
 ```javascript
 /**
