@@ -367,7 +367,7 @@ switch (Type(input)) {
 * Infinity转换`'Infinity'`
 * 负数转换为`-ToString(-m)`
 * 正数转换分两种情况
- * 小数点前的数字超过21位或小数点后紧跟的0超过5位，转换为`'科学技术法表示的m'`
+ * 小数点前的数字超过20位或小数点后紧跟的0超过5位，转换为`'科学技术法表示的m'`
  * 其他情况转换为`'十进制表示的m'`
 
 示例
@@ -383,6 +383,7 @@ ToString(-0) // '0'
 ToString(Infinity) // 'Infinity'
 ToString(-Infinity) // '-Infinity'
 ToString(12.345) // '12.345'
+ToString(Math.pow(10, 21) + 12.34) // '1e+21'
 ToString(0.0000001) // '1e-7'
 ToString({}) // '[object, Object]'
 ```
