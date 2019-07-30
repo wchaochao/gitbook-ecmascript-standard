@@ -85,7 +85,7 @@ Number.[[DefineOwnProperty]]('length', {
   [[Configurable]]: false
 }, false)
 Number.[[DefineOwnProperty]]('prototype', {
-  [[Value]]: {constructor: String,...},
+  [[Value]]: {constructor: Number,...},
   [[Writable]]: false,
   [[Enumerable]]: false,
   [[Configurable]]: false
