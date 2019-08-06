@@ -20,7 +20,7 @@
 * 夏时制时间：Daylight Saving Time，实行夏时制的地区会在夏季将时间拨快1小时，在秋季调整回来
 * 本地时间：本地时间 = UTC时间 + 时区 + 夏时制时间调整
 
-#### 标准时间格式
+## 标准时间格式
 
 `YYYY-MM-DDTHH:MM:ss.sssZ`
 
@@ -31,7 +31,7 @@
 * `HH`: 00 - 23, 两位数的时，默认为00
 * `MM`: 00 - 59, 两位数的分，默认为00
 * `ss`: 00 - 59, 两位数的秒，默认为00
-* `sss`: 00 - 999, 三位数的毫秒，默认为00
+* `sss`: 00 - 999, 三位数的毫秒，默认为000
 * `Z`: 时区，默认为单`Z`
  * 单`Z`: UTC时间
  * `Z+HH:mm`: 东时区
@@ -43,7 +43,7 @@
 * `YYYY-MM`
 * `YYYY-MM-DD`
 
-时间格式
+日期后的时间格式
 
 * `THH:mm`
 * `THH:mm:ss`
@@ -126,7 +126,7 @@ function YearFromTime (t) {
     } else {
       return start - 1
     }
-  } while(true)
+  } while (true)
 }
 
 function InLeapYear (t) {
@@ -393,14 +393,14 @@ return day × msPerDay + time
 
 ### TimeClip(time)
 
-时间值限制在前后一亿天内
+时间值限制为前后一亿天内的毫秒数
 
 ```javascript
 /**
  * 时间值不为有限值或超过前后一亿天范围时，返回NaN
  * 其他，转换为整数
  */
-if (!isInfinite(time) || abs(time) >= 8.64e+15) {
+if (!isFinite(time) || abs(time) >= 8.64e+15) {
   return NaN
 } else {
   return ToInteger(time)
@@ -411,7 +411,7 @@ if (!isInfinite(time) || abs(time) >= 8.64e+15) {
 
 ### Date([year [, month [, date [, hours [, minutes [, seconds [, ms ] ] ] ] ] ] ] )
 
-作为函数使用，返回当前时间的字符串表示
+作为函数使用，返回当前时间的字符串表示（当前时间为计算机的时间）
 
 ```javascript
 /**
@@ -430,13 +430,13 @@ return new Date().toString()
  * [[Class]]属性为'Date'
  * [[Prototype]]属性为Date.prototype
  * [[Extensible]]属性为true
- * [[Primitive]]属性为当前时间对应的UTC毫秒数
+ * [[PrimitiveValue]]属性为当前时间对应的UTC毫秒数
  */
 let date = new Object()
 date.[[Class]] = 'Date'
 date.[[Prototype]] = Date.prototype
 date.[[Extensible]] = true
-date.[[Primitive]] = currentTimeValue
+date.[[PrimitiveValue]] = currentTimeValue
 ```
 
 ### new Date(value)
@@ -449,7 +449,7 @@ date.[[Primitive]] = currentTimeValue
  * [[Class]]属性为'Date'
  * [[Prototype]]属性为Date.prototype
  * [[Extensible]]属性为true
- * [[Primitive]]属性为指定的UTC毫秒数或时间字符串对应的UTC毫秒数，限制在前后一亿天内
+ * [[PrimitiveValue]]属性为指定的UTC毫秒数或时间字符串对应的UTC毫秒数，限制前后一亿天内
  *   value转换为Primitive类型
  *      value为字符串时，调用Date.parse获取UTC毫秒数
  *      value为其他，转换为Number类型
@@ -490,7 +490,7 @@ new Date('Febraury 3, 2010') // Wed Feb 03 2010 00:00:00 GMT+0800 (中国标准�
  * [[Class]]属性为'Date'
  * [[Prototype]]属性为Date.prototype
  * [[Extensible]]属性为true
- * [[Primitive]]属性为本地时间元素对应的UTC毫秒数，限制在前后一亿天内
+ * [[PrimitiveValue]]属性为本地时间元素对应的UTC毫秒数，限制前后一亿天内
  *   year转换为Number类型
  *      year转换为整数在[0, 99]之内时，将year置为1900 + ToInteger(year)
  *   month转换为Number类型
@@ -519,7 +519,7 @@ let s = IsPresent(seconds) ? ToNumber(seconds) : 0
 ms = IsPresent(ms) ? ToNumber(ms) : 0
 let t = MakeDate(MakeDay(y, m, d), MakeTime(h, m, s, ms))
 
-date.[[Primitive]] = TimeClip(UTC(t))
+date.[[PrimitiveValue]] = TimeClip(UTC(t))
 ```
 
 示例
@@ -555,13 +555,13 @@ Date.[[DefineOwnProperty]]('prototype', {
 
 ### 静态方法
 
-### Date.now()
+#### Date.now()
 
-获取当前时间对于的UTC毫秒数
+获取当前时间对应的UTC毫秒数
 
 ```javascript
 /**
- * 返回当前时间对于的UTC毫秒数
+ * 返回当前时间对应的UTC毫秒数
  */
 return currentTimeValue
 ```
@@ -589,13 +589,13 @@ let s = ToString(s)
 return parse(s)
 ```
 
-### Date.UTC(year, month [, date [, hours [, minutes [, seconds [, ms ] ] ] ] ] )
+#### Date.UTC(year, month [, date [, hours [, minutes [, seconds [, ms ] ] ] ] ] )
 
 将UTC时间元素转换为UTC毫秒数
 
 ```javascript
 /**
- * 将UTC时间元素转换为对应的UTC毫秒数，限制在前后一亿天内
+ * 将UTC时间元素转换为对应的UTC毫秒数，限制前后一亿天内
  *   year转换为Number类型
  *      year转换为整数在[0, 99]之内时，将year置为1900 + ToInteger(year)
  *   month转换为Number类型
@@ -620,4 +620,1389 @@ ms = IsPresent(ms) ? ToNumber(ms) : 0
 let t = MakeDate(MakeDay(y, m, d), MakeTime(h, m, s, ms))
 
 return TimeClip(UTC(t))
+```
+
+## 原型对象
+
+Date对象的原型
+
+```javascript
+Date.prototype
+```
+
+### 原型属性
+
+```javascript
+Date.prototype.[[Class]] = 'Date'
+Date.prototype.[[Prototype]] = Object.prototype
+Date.prototype.[[Extensible]] = true
+Date.prototype.[[PrimitiveValue]] = NaN
+
+Date.prototype.constructor = Date
+```
+
+### 原型方法
+
+**转换方法**
+
+#### Date.prototype.toString( )
+
+获取Date对象的字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的字符串表示
+ *   通常为ddd MMM D YYYY HH:mm:ss GMT+时区格式
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toString() // 'Invalid Date'
+(new Date('2010-01-01')).toString() // 'Fri Jan 01 2010 08:00:00 GMT+0800 (中国标准时间)'
+```
+
+#### Date.prototype.toDateString( )
+
+获取Date对象的日期字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的日期字符串表示
+ *   通常为ddd MMM D YYYY格式
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toDateString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toDateString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toDateString() // 'Invalid Date'
+(new Date('2010-01-01')).toDateString() // 'Fri Jan 01 2010'
+```
+
+#### Date.prototype.toTimeString( )
+
+获取Date对象的时间字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的时间字符串表示
+ *   通常为HH:mm:ss GMT+时区格式
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toTimeString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toTimeString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toTimeString() // 'Invalid Date'
+(new Date('2010-01-01')).toTimeString() // '08:00:00 GMT+0800 (中国标准时间)'
+```
+
+#### Date.prototype.toLocaleString( )
+
+获取Date对象的本地字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的本地字符串表示
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toLocaleString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toLocaleString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toLocaleString() // 'Invalid Date'
+(new Date('2010-01-01')).toLocaleString() // '2010/1/1 上午8:00:00'
+```
+
+#### Date.prototype.toLocaleDateString( )
+
+获取Date对象的本地日期字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的本地日期字符串表示
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toLocaleDateString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toLocaleDateString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toLocaleDateString() // 'Invalid Date'
+(new Date('2010-01-01')).toLocaleDateString() // '2010/1/1'
+```
+
+#### Date.prototype.toLocaleTimeString( )
+
+获取Date对象的本地时间字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的本地时间字符串表示
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toLocaleTimeString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toLocaleTimeString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toLocaleTimeString() // 'Invalid Date'
+(new Date('2010-01-01')).toLocaleTimeString() // '上午8:00:00'
+```
+
+#### Date.prototype.toUTCString( )
+
+获取Date对象的UTC时间字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的UTC时间字符串表示
+ *   通常为ddd, DD MMM YYYY HH:mm:ss GMT格式
+ *   非法Date返回'Invalid Date'
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return toUTCString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toUTCString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toUTCString() // 'Invalid Date'
+(new Date('2010-01-01')).toUTCString() // 'Fri, 01 Jan 2010 00:00:00 GMT'
+```
+
+#### Date.prototype.toISOString( )
+
+获取Date对象的ISO时间字符串表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回Date对象的ISO时间字符串表示
+ *   通常为YYYY-MM-DDTHH:mm:ss.sssZ格式
+ *   非法Date抛出RangeError
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+if (SameValue(this.[[PrimitiveValue]], NaN)) {
+  throw RangeError
+}
+return toISOString(this)
+```
+
+示例
+
+```javascript
+Date.prototype.toISOString.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).toISOString() // 抛出RangeError
+(new Date('2010-01-01')).toISOString() // '2010-01-01T00:00:00.000Z'
+```
+
+#### Date.prototype.toJSON()
+
+获取Date对象的JSON字符串表示
+
+```javascript
+/**
+ * this转换为Object对象O，再转换为原始值类型t，偏向Number
+ * t为Number类型且不为有限数字，返回null
+ * t为其他，调用O的toISOString方法，返回返回值
+ *   toISOString方法不存在时，抛出TypeError
+ */
+let O = ToObject(this)
+let t = ToPrimitive(O, 'Number')
+if (Type(t) === Number && !IsFinite(t)) {
+  return null
+}
+
+let toISO = O.[[Get]]('toISOString')
+if (!IsCallable(toISO)) {
+  throw TypeError
+} else {
+  return toISO.[[Call]](this)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.toJSON.call(undefined) // 抛出TypeError
+Date.prototype.toJSON.call(NaN) // null
+Date.prototype.toJSON.call(1) // 抛出TypeError
+
+(new Date(undefined)).toJSON() // null
+(new Date('2010-01-01')).toJSON() // '2010-01-01T00:00:00.000Z'
+```
+
+#### Date.prototype.valueOf( )
+
+获取Date对象的值表示
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回[[PrimitiveValue]]值
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return this.[[PrimitiveValue]]
+```
+
+示例
+
+```javascript
+Date.prototype.valueOf.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).valueOf() // NaN
+(new Date('2010-01-01')).valueOf() // 1262304000000
+```
+
+**获取方法**
+
+#### Date.prototype.getTime( )
+
+获取Date对象的时间值
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，返回[[PrimitiveValue]]值
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+return this.[[PrimitiveValue]]
+```
+
+示例
+
+```javascript
+Date.prototype.getTime.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getTime() // NaN
+(new Date('2010-01-01')).getTime() // 1262304000000
+```
+
+#### Date.prototype.getFullYear( )
+
+获取Date对象的本地年
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的年
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return YearFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getFullYear.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getFullYear() // NaN
+(new Date('2010-01-01T00:00:00')).getFullYear() // 2010
+```
+
+#### Date.prototype.getUTCFullYear( )
+
+获取Date对象的UTC年
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的年
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return YearFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCFullYear.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCFullYear() // NaN
+(new Date('2010-01-01T00:00')).getUTCFullYear() // 2009
+```
+
+#### Date.prototype.getMonth( )
+
+获取Date对象的本地月，[0, 11]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的月
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return MonthFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getMonth.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getMonth() // NaN
+(new Date('2010-01-01T00:00:00')).getMonth() // 0
+```
+
+#### Date.prototype.getUTCMonth( )
+
+获取Date对象的UTC月，[0, 11]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的月
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return MonthFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCMonth.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCMonth() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCMonth() // 11
+```
+
+#### Date.prototype.getDate( )
+
+获取Date对象的本地日，[1, 31]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的日
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return DateFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getDate.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getDate() // NaN
+(new Date('2010-01-01T00:00:00')).getDate() // 1
+```
+
+#### Date.prototype.getUTCDate( )
+
+获取Date对象的UTC日，[1, 31]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的日
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return DateFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCDate.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCDate() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCDate() // 31
+```
+
+#### Date.prototype.getDay( )
+
+获取Date对象的本地星期，[0, 6]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的星期
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return WeekDay(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getDay.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getDay() // NaN
+(new Date('2010-01-01T00:00:00')).getDay() // 5
+```
+
+#### Date.prototype.getUTCDay( )
+
+获取Date对象的UTC星期，[0, 6]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的星期
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return WeekDay(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCDay.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCDay() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCDay() // 4
+```
+
+#### Date.prototype.getHours( )
+
+获取Date对象的本地时，[0, 23]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的时
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return HourFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getHours.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getHours() // NaN
+(new Date('2010-01-01T00:00:00')).getHours() // 0
+```
+
+#### Date.prototype.getUTCHours( )
+
+获取Date对象的UTC时，[0, 23]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的时
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return HourFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCHours.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCHours() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCHours() // 16
+```
+
+#### Date.prototype.getMinutes( )
+
+获取Date对象的本地分，[0, 59]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的分
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return MinFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getMinutes.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getMinutes() // NaN
+(new Date('2010-01-01T00:00:00')).getMinutes() // 0
+```
+
+#### Date.prototype.getUTCMinutes( )
+
+获取Date对象的UTC分，[0, 59]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的分
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return MinFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCMinutes.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCMinutes() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCMinutes() // 0
+```
+
+#### Date.prototype.getSeconds( )
+
+获取Date对象的本地秒，[0, 59]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的秒
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return SecFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getSeconds.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getSeconds() // NaN
+(new Date('2010-01-01T00:00:00')).getSeconds() // 0
+```
+
+#### Date.prototype.getUTCSeconds( )
+
+获取Date对象的UTC秒，[0, 59]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的秒
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return SecFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCSeconds.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCSeconds() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCSeconds() // 0
+```
+
+#### Date.prototype.getMilliseconds( )
+
+获取Date对象的本地毫秒，[0, 999]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，转换为本地时间值，返回对应的毫秒
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return msFromTime(LocalTime(t))
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getMilliseconds.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getMilliseconds() // NaN
+(new Date('2010-01-01T00:00:00')).getMilliseconds() // 0
+```
+
+#### Date.prototype.getUTCMilliseconds( )
+
+获取Date对象的UTC毫秒，[0, 59]的整数
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回对应的毫秒
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return msFromTime(t)
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getUTCMilliseconds.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getUTCMilliseconds() // NaN
+(new Date('2010-01-01T00:00:00')).getUTCMilliseconds() // 0
+```
+
+#### Date.prototype.getTimezoneOffset( )
+
+获取UTC时间和本地时间的分钟差
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * this为Date对象，获取时间值
+ *    时间值为NaN，返回NaN
+ *    时间值不为NaN，返回UTC时间和本地时间的分钟差
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+if (SameValue(t, NaN)) {
+  return NaN
+} else {
+  return (t - LocalTime(t)) / msPerMinute
+}
+```
+
+示例
+
+```javascript
+Date.prototype.getTimezoneOffset.call(undefined) // 抛出TypeError
+
+(new Date(undefined)).getTimezoneOffset() // NaN
+(new Date('2010-01-01T00:00:00')).getTimezoneOffset() // -480
+```
+
+**设置方法**
+
+#### Date.prototype.setTime(time)
+
+设置Date对象的时间值
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * time转换为Number类型，限制为前后一亿天内的毫秒数
+ * 设置[[PrimitiveValue]]属性为time，并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let v = TimeClip(ToNumber(time))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setTime.call(undefined) // 抛出TypeError
+
+(new Date()).setTime(NaN) // NaN
+(new Date(undefined)).setTime(0) // 0
+(new Date('2010-01-01T00:00:00')).setTime(0) // 0
+```
+
+#### Date.prototype.setMilliseconds(ms)
+
+设置Date对象的本地毫秒
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * ms转换为Number类型，设置本地毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let time = MakeTime(HourFromTime(t), MinFromTime(t), SecFromTime(t), ToNumber(ms))
+let v = TimeClip(UTC(MakeDate(Day(t), time)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setMilliseconds.call(undefined) // 抛出TypeError
+
+(new Date()).setMilliseconds(NaN) // NaN
+(new Date(undefined)).setMilliseconds(0) // NaN
+(new Date('2010-01-01T00:00:00')).setMilliseconds(100) // 1262275200100
+(new Date('2010-01-01T00:00:00')).setMilliseconds(2000) // 1262275202000
+```
+
+#### Date.prototype.setUTCMilliseconds(ms)
+
+设置Date对象的UTC毫秒
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * ms转换为Number类型，设置UTC毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let time = MakeTime(HourFromTime(t), MinFromTime(t), SecFromTime(t), ToNumber(ms))
+let v = TimeClip(MakeDate(Day(t), time))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCMilliseconds.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCMilliseconds(NaN) // NaN
+(new Date(undefined)).setUTCMilliseconds(0) // NaN
+(new Date('2010-01-01T00:00:00')).setUTCMilliseconds(100) // 1262275200100
+(new Date('2010-01-01T00:00:00')).setUTCMilliseconds(2000) // 1262275202000
+```
+
+#### Date.prototype.setSeconds(sec [, ms ])
+
+设置Date对象的本地秒
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * sec转换为Number类型，设置本地秒为sec
+ * ms提供时转换为Number类型，设置本地毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let time = MakeTime(HourFromTime(t), MinFromTime(t), ToNumber(sec), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(UTC(MakeDate(Day(t), time)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setSeconds.length // 2 
+
+Date.prototype.setSeconds.call(undefined) // 抛出TypeError
+
+(new Date()).setSeconds(NaN) // NaN
+(new Date(undefined)).setSeconds(0) // NaN
+(new Date('2010-01-01T00:00:00')).setSeconds(1) // 1262275201000
+(new Date('2010-01-01T00:00:00')).setSeconds(1, 100) // 1262275201100
+(new Date('2010-01-01T00:00:00')).setSeconds(100, 2000) // 1262275302000
+```
+
+#### Date.prototype.setUTCSeconds(sec [, ms ])
+
+设置Date对象的UTC秒
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * sec转换为Number类型，设置UTC秒为sec
+ * ms提供时转换为Number类型，设置UTC毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let time = MakeTime(HourFromTime(t), MinFromTime(t), ToNumber(sec), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(MakeDate(Day(t), time))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCSeconds.length // 2 
+
+Date.prototype.setUTCSeconds.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCSeconds(NaN) // NaN
+(new Date(undefined)).setUTCSeconds(0) // NaN
+(new Date('2010-01-01T00:00:00')).setUTCSeconds(1) // 1262275201000
+(new Date('2010-01-01T00:00:00')).setUTCSeconds(1, 100) // 1262275201100
+(new Date('2010-01-01T00:00:00')).setUTCSeconds(100, 2000) // 1262275302000
+```
+
+#### Date.prototype.setMinutes(min [, sec [, ms ] ] )
+
+设置Date对象的本地分
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * min转换为Number类型，设置本地分为min
+ * sec提供时转换为Number类型，设置本地秒为sec
+ * ms提供时转换为Number类型，设置本地毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let time = MakeTime(HourFromTime(t), ToNumber(min), IsPresent(sec) ? ToNumber(sec) : SecFromTime(t), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(UTC(MakeDate(Day(t), time)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setMinutes.length // 3
+
+Date.prototype.setMinutes.call(undefined) // 抛出TypeError
+
+(new Date()).setMinutes(NaN) // NaN
+(new Date(undefined)).setMinutes(0) // NaN
+(new Date('2010-01-01T00:00:00')).setMinutes(1) // 1262275260000
+(new Date('2010-01-01T00:00:00')).setMinutes(1, 1) // 1262275261000
+(new Date('2010-01-01T00:00:00')).setMinutes(1, 1, 100) // 126227561100
+(new Date('2010-01-01T00:00:00')).setMinutes(100, 100, 2000) // 1262281302000
+```
+
+#### Date.prototype.setUTCMinutes(min [, sec [, ms ] ] )
+
+设置Date对象的UTC分
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * min转换为Number类型，设置UTC分为min
+ * sec提供时转换为Number类型，设置UTC秒为sec
+ * ms提供时转换为Number类型，设置UTC毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let time = MakeTime(HourFromTime(t), ToNumber(min), IsPresent(sec) ? ToNumber(sec) : SecFromTime(t), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(MakeDate(Day(t), time))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCMinutes.length // 3
+
+Date.prototype.setUTCMinutes.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCMinutes(NaN) // NaN
+(new Date(undefined)).setUTCMinutes(0) // NaN
+(new Date('2010-01-01T00:00:00')).setUTCMinutes(1) // 1262275260000
+(new Date('2010-01-01T00:00:00')).setUTCMinutes(1, 1) // 1262275261000
+(new Date('2010-01-01T00:00:00')).setUTCMinutes(1, 1, 100) // 126227561100
+(new Date('2010-01-01T00:00:00')).setUTCMinutes(100, 100, 2000) // 1262281302000
+```
+
+#### Date.prototype.setHours(hour [, min [, sec [, ms ] ] ])
+
+设置Date对象的本地时
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * hour转换为Number类型，设置本地时为hour
+ * min提供时转换为Number类型，设置本地秒为min
+ * sec提供时转换为Number类型，设置本地秒为sec
+ * ms提供时转换为Number类型，设置本地毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let time = MakeTime(ToNumber(hour), IsPresent(min) ? ToNumber(min) : MinFromTime(t), IsPresent(sec) ? ToNumber(sec) : SecFromTime(t), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(UTC(MakeDate(Day(t), time)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setHours.length // 4
+
+Date.prototype.setHours.call(undefined) // 抛出TypeError
+
+(new Date()).setHours(NaN) // NaN
+(new Date(undefined)).setHours(0) // NaN
+(new Date('2010-01-01T00:00:00')).setHours(1) // 1262278800000
+(new Date('2010-01-01T00:00:00')).setHours(1, 1) // 1262278860000
+(new Date('2010-01-01T00:00:00')).setHours(1, 1, 1) // 1262278861000
+(new Date('2010-01-01T00:00:00')).setHours(1, 1, 1, 100) // 1262278861100
+(new Date('2010-01-01T00:00:00')).setHours(100, 100, 100, 2000) // 1262641302000
+```
+
+#### Date.prototype.setUTCHours(hour [, min [, sec [, ms ] ] ])
+
+设置Date对象的UTC时
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * hour转换为Number类型，设置UTC时为hour
+ * min提供时转换为Number类型，设置UTC秒为min
+ * sec提供时转换为Number类型，设置UTC秒为sec
+ * ms提供时转换为Number类型，设置UTC毫秒为ms
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let time = MakeTime(ToNumber(hour), IsPresent(min) ? ToNumber(min) : MinFromTime(t), IsPresent(sec) ? ToNumber(sec) : SecFromTime(t), IsPresent(ms) ? ToNumber(ms) : msFromTime(t))
+let v = TimeClip(MakeDate(Day(t), time))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCHours.length // 4
+
+Date.prototype.setUTCHours.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCHours(NaN) // NaN
+(new Date(undefined)).setUTCHours(0) // NaN
+(new Date('2010-01-01T00:00:00')).setUTCHours(1) // 1262221200000
+(new Date('2010-01-01T00:00:00')).setUTCHours(1, 1) // 1262221260000
+(new Date('2010-01-01T00:00:00')).setUTCHours(1, 1, 1) // 1262221261000
+(new Date('2010-01-01T00:00:00')).setUTCHours(1, 1, 1, 100) // 1262221261100
+(new Date('2010-01-01T00:00:00')).setUTCHours(100, 100, 100, 2000) // 1262583702000
+```
+
+#### Date.prototype.setDate(date)
+
+设置Date对象的本地日
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * date转换为Number类型，设置本地日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let day = MakeDay(YearFromTime(t), MonthFromTime(t), ToNumber(date))
+let v = TimeClip(UTC(MakeDate(day, TimeWithinDay(t))))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setDate.call(undefined) // 抛出TypeError
+
+(new Date()).setDate(NaN) // NaN
+(new Date(undefined)).setDate(0)  // NaN
+(new Date('2010-01-01T00:00:00')).setDate(10) // 1263052800000
+(new Date('2010-01-01T00:00:00')).setDate(100) // 1270828800000
+```
+
+#### Date.prototype.setUTCDate(date)
+
+设置Date对象的UTC日
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * date转换为Number类型，设置UTC日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let day = MakeDay(YearFromTime(t), MonthFromTime(t), ToNumber(date))
+let v = TimeClip(MakeDate(day, TimeWithinDay(t)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCDate.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCDate(NaN) // NaN
+(new Date(undefined)).setUTCDate(0)  // NaN
+(new Date('2010-01-01T00:00:00')).setUTCDate(10) // 1260460800000
+(new Date('2010-01-01T00:00:00')).setUTCDate(100) // 1268236800000
+```
+
+#### Date.prototype.setMonth(month [, date ] )
+
+设置Date对象的本地月
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * month转换为Number类型，设置本地月为month
+ * date提供时转换为Number类型，设置本地日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = LocalTime(this.[[PrimitiveValue]])
+let day = MakeDay(YearFromTime(t), ToNumber(month), IsPresent(date) ? ToNumber(date) : DateFromTime(t))
+let v = TimeClip(UTC(MakeDate(day, TimeWithinDay(t))))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setMonth.length // 2 
+
+Date.prototype.setMonth.call(undefined) // 抛出TypeError
+
+(new Date()).setMonth(NaN) // NaN
+(new Date(undefined)).setMonth(0) // NaN
+(new Date('2010-01-01T00:00:00')).setMonth(10) // 1288540800000
+(new Date('2010-01-01T00:00:00')).setMonth(10, 10) // 1289318400000
+(new Date('2010-01-01T00:00:00')).setMonth(100, 100) // 1533657600000
+```
+
+#### Date.prototype.setUTCMonth(month [, date ] )
+
+设置Date对象的UTC月
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * month转换为Number类型，设置UTC月为month
+ * date提供时转换为Number类型，设置UTC日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = this.[[PrimitiveValue]]
+let day = MakeDay(YearFromTime(t), ToNumber(month), IsPresent(date) ? ToNumber(date) : DateFromTime(t))
+let v = TimeClip(MakeDate(day, TimeWithinDay(t)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCMonth.length // 2 
+
+Date.prototype.setUTCMonth.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCMonth(NaN) // NaN
+(new Date(undefined)).setUTCMonth(0) // NaN
+(new Date('2010-01-01T00:00:00')).setUTCMonth(10) // 1259683200000
+(new Date('2010-01-01T00:00:00')).setUTCMonth(10, 10) // 1257868800000
+(new Date('2010-01-01T00:00:00')).setUTCMonth(100, 100) // 1502208000000
+```
+
+#### Date.prototype.setFullYear(year [, month [, date ] ] )
+
+设置Date对象的本地年
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * 时间值为NaN时，本地时间值置为+0
+ * year转换为Number类型，设置本地年为year
+ * month提供时转换为Number类型，设置本地月为month
+ * date提供时转换为Number类型，设置本地日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = SameValue(this.[[PrimitiveValue]], NaN) ? +0 : LocalTime(this.[[PrimitiveValue]])
+let day = MakeDay(ToNumber(year), IsPresent(month) ? ToNumber(month) : MonthFromTime(t), IsPresent(date) ? ToNumber(date) : DateFromTime(t))
+let v = TimeClip(UTC(MakeDate(day, TimeWithinDay(t))))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setFullYear.length // 3
+
+Date.prototype.setFullYear.call(undefined) // 抛出TypeError
+
+(new Date()).setFullYear(NaN) // NaN
+(new Date(undefined)).setFullYear(2010) // 1262275200000
+(new Date('2010-01-01T00:00:00')).setFullYear(2012) // 1325347200000
+(new Date('2010-01-01T00:00:00')).setFullYear(2012, 10, 10) // 1352476800000
+(new Date('2010-01-01T00:00:00')).setFullYear(2010, 100, 100) // 1533657600000
+```
+
+#### Date.prototype.setUTCFullYear(year [, month [, date ] ] )
+
+设置Date对象的UTC年
+
+```javascript
+/**
+ * this不为Date对象，抛出TypeError
+ * 时间值为NaN时，UTC时间值置为+0
+ * year转换为Number类型，设置UTC年为year
+ * month提供时转换为Number类型，设置UTC月为month
+ * date提供时转换为Number类型，设置UTC日为date
+ * 重新计算时间值赋给[[PrimitiveValue]]属性并返回
+ */
+if (Object.prototype.toString.call(this) !== '[object Date]') {
+  throw TypeError
+}
+let t = SameValue(this.[[PrimitiveValue]], NaN) ? +0 : this.[[PrimitiveValue]]
+let day = MakeDay(ToNumber(year), IsPresent(month) ? ToNumber(month) : MonthFromTime(t), IsPresent(date) ? ToNumber(date) : DateFromTime(t))
+let v = TimeClip(MakeDate(day, TimeWithinDay(t)))
+this.[[PrimitiveValue]] = v
+return v
+```
+
+示例
+
+```javascript
+Date.prototype.setUTCFullYear.length // 3
+
+Date.prototype.setUTCFullYear.call(undefined) // 抛出TypeError
+
+(new Date()).setUTCFullYear(NaN) // NaN
+(new Date(undefined)).setUTCFullYear(2010) // 1262304000000
+(new Date('2010-01-01T00:00:00')).setUTCFullYear(2012) // 1356969600000
+(new Date('2010-01-01T00:00:00')).setUTCFullYear(2012, 10, 10) // 1352563200000
+(new Date('2010-01-01T00:00:00')).setUTCFullYear(2010, 100, 100) // 1533744000000
+```
+
+## 实例对象
+
+[[Class]]为Date的对象
+
+```javascript
+// 通过构造器Date创建
+new Date()
+new Date(0)
+new Date('2010-01-01')
+new Date(2010, 0)
+```
+
+### 实例属性
+
+```javascript
+date.[[Class]] = 'Date'
+date.[[Prototype]] = Date.prototype
+date.[[Extensible]] = true
+date.[[PrimitiveValue]] = timeValue
 ```
