@@ -39,7 +39,7 @@ Number([1]) // 1
 
 ### new Number([ value ])
 
-作为构造器使用，创建Boolean对象
+作为构造器使用，创建Number对象
 
 ```javascript
 /**
