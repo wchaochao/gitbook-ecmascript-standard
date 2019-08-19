@@ -618,3 +618,109 @@ decodeURIComponent('http://www.w3school.com.cn/My%20first/') // http://www.w3sch
 
 decodeURIComponent('http%3A%2F%2Fwww.w3school.com.cn%2Fp%201%2F') // http://www.w3school.com.cn/p 1/ 
 ```
+
+### 扩展方法
+
+#### escape(string)
+
+对字符串进行转义
+
+```javascript
+/**
+ * string转换为String类型，对string的每个字符进行转义
+ *   字符为a-zA-Z0-9@*_+-./，仍为该字符
+ *   字符Unicode码小于256，改为%xx形式
+ *   字符Unicode码不小于256，改为%uxxxx形式
+ */
+let str = ToString(string)
+let len = str.length
+let R = ''
+
+function getHexString (code, num) {
+  let n = Math.pow(16, num) + code
+  return n.toString(16).slice(1)
+}
+
+for (let i = 0; i < len; i++) {
+  let char = str[i]
+  let code = char.charCodeAt(0)
+  let S = ''
+  if (/[a-zA-Z0-9@*_+-./]/.test(char)) {
+    S = char
+  } else if (code < 256) {
+    S = getHexString(code, 2)
+  } else {
+    S = getHexString(code, 4)
+  }
+  R += S
+}
+
+return R
+```
+
+示例
+
+```javascript
+escape('a') // 'a'
+escape('?') // '%3F'
+escape('中') // '%u4E2D'
+```
+
+### unescape(string)
+
+对字符串解转义
+
+```javascript
+/**
+ * string转换为String类型，对%xx、%uxxxx进行解转义
+ */
+let str = ToString(string)
+let len = str.length
+let R = ''
+
+function getStringByHex () {
+  let code = 0
+  for (let i = 0; i < arguments.length; i++) {
+    let hex = ToNumber('0x' + arguments[i])
+    if (SameValue(hex, NaN)) {
+      return null
+    } else {
+      code = code * 16 + hex
+    }
+  }
+  return String.fromCharCode(code)
+}
+
+let k = 0
+while (k < len) {
+  let c = str[k]
+  let S = c
+  let escaped
+  if (c === '%') {
+    if (str[k + 1] === 'u' && k + 6 >= len) {
+      let char = getStringByHex(str[k + 2], str[k + 3], str[k + 4], str[k + 5])
+      if (Type(char) === String) {
+        S = char
+        k += 5
+      }
+    } else if (k + 3 >= len) {
+      let char = getStringByHex(str[k + 1], str[k + 2])
+      if (Type(char) === String) {
+        S = char
+        k += 2
+      }
+    }
+  }
+  
+  R += S
+  k++
+}
+```
+
+示例
+
+```javascript
+escape('a') // 'a'
+escape('%3F') // '?'
+escape('%u4E2D') // '中'
+```

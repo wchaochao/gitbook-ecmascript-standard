@@ -1986,6 +1986,12 @@ Date.prototype.setUTCFullYear.call(undefined) // 抛出TypeError
 (new Date('2010-01-01T00:00:00')).setUTCFullYear(2010, 100, 100) // 1533744000000
 ```
 
+### 扩展方法
+
+#### Date.prototype.toGMTString( )
+
+Date.prototype.toUTCString()的旧版本方法
+
 ## 实例对象
 
 [[Class]]为Date的对象

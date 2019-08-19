@@ -53,3 +53,4 @@
 * [Error构造器](lib/builtin/error.md)
 * [Math对象](lib/builtin/math.md)
 * [JSON对象](lib/builtin/json.md)
+* [严格模式](lib/builtin/strict.md)

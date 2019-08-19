@@ -1019,6 +1019,61 @@ String.prototype.split.call(undefined) // 抛出TypeError
 String.prototype.split.call(true, 2) // ['true']
 ```
 
+### 扩展方法
+
+#### String.prototype.substr(start, length)
+
+字符串截取，指定开始点和长度
+
+```javascript
+/**
+ * 检测this能否转换为对象
+ * this转换为String类型S，获取length属性len
+ * start转换为整数，为负数时加len
+ *      小于0时置为0，大于len时置为len，落在[0, len]之间
+ * length为undefined时，end置为len
+ * length不为undefined时，end为start + length并与start同样处理
+ * 截取S中[start, end)的字符串并返回
+ */
+heckObjectCoercible(this)
+let S = ToString(this)
+let len = S.length
+
+function format (num) {
+  num = ToInterger(num)
+  if (num < 0) {
+    num = max(num + len, 0)
+  } else {
+    num = min(num, len)
+  }
+}
+
+start = format(start)
+let end
+if (length === undefined) {
+  end = len
+} else {
+  end = format(start + length)
+}
+
+return slice(S, start, end)
+```
+
+示例
+
+```javascript
+String.prototype.substr.length // 2
+
+String.prototype.substr.call(undefined) // 抛出TypeError
+
+'abcba'.substr() // ''
+'abcba'.substr(1, -1) // ''
+'abcba'.substr(-2, 3) // 'ba'
+'abcba'.substr(2.2, 1.1) // 'c'
+
+String.prototype.substr.call(true, 2) // 'ue'
+```
+
 ## 实例对象
 
 [[Class]]为String的对象

@@ -59,6 +59,7 @@ ECMAScript语言规范
 * Error构造器
 * Math对象
 * JSON对象
+* 严格模式
 
 ## 推荐资料
 

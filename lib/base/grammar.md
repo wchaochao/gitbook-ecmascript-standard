@@ -365,6 +365,28 @@ HexDigit :: one of // 单个十六进制
 0X1a
 ```
 
+八进制数字，兼容以前的版本（禁止在严格模式下使用）
+
+```
+NumericLiteral ::
+  DecimalLiteral
+  HexIntegerLiteral
+  OctalIntegerLiteral
+
+OctalIntegerLiteral ::
+  0 OctalDigit
+  OctalIntegerLiteral OctalDigit
+
+OctalDigit :: one of
+  0 1 2 3 4 5 6 7
+```
+
+示例
+
+```javascript
+012 // 10
+```
+
 ### 字符串字面量
 
 "非双引号字符"或'非单引号字符'
@@ -434,7 +456,6 @@ SingleStringCharacter :: // 单个单引号字符串字符
  * `\'`: 单引号
  * `\"`: 双引号
  * `\\`: 反斜杠
- * `\三位八进制`: 对应的ASCII码
  * `\x两位十六进制`: 对应的ASCII码
  * `\u四位十六进制`: 对应的Unicode字符
  * `\其他`: 忽略\
@@ -455,6 +476,37 @@ SingleStringCharacter :: // 单个单引号字符串字符
 // 行延续符
 'ab\
 c'
+```
+
+八进制转义，兼容以前版本（禁止在严格模式下使用）
+
+```
+EscapeSequence ::
+  CharacterEscapeSequence
+  OctalEscapeSequence
+  HexEscapeSequence
+  UnicodeEscapeSequence
+
+OctalEscapeSequence ::
+  OctalDigit [lookahead ∉ DecimalDigit]
+  ZeroToThree OctalDigit [lookahead ∉ DecimalDigit]
+  FourToSeven OctalDigit
+  ZeroToThree OctalDigit OctalDigit
+
+ZeroToThree :: one of
+  0 1 2 3
+
+FourToSeven :: one of
+  4 5 6 7
+```
+
+示例
+
+```javascript
+'\1'
+'\11'
+'\111'
+'\41'
 ```
  
 ### 正则字面量
