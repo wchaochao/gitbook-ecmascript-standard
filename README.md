@@ -4,7 +4,7 @@
 
 ---
 
-ECMAScript语言规范
+ECMAScript5.1语言规范
 
 ## 目录
 

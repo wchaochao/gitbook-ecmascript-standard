@@ -720,7 +720,7 @@ while (k < len) {
 示例
 
 ```javascript
-escape('a') // 'a'
-escape('%3F') // '?'
-escape('%u4E2D') // '中'
+unescape('a') // 'a'
+unescape('%3F') // '?'
+unescape('%u4E2D') // '中'
 ```
