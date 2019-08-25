@@ -71,7 +71,9 @@ console.log(c === d); // false
 
 ## 对象
 
-属性的集合，所有数据都可以视为对象
+* 属性的集合
+* 属性可动态添加
+* 所有数据都可以视为对象
 
 ### Object对象
 
@@ -145,3 +147,5 @@ null.a // 抛出TypeError
 
 * 使用`new`创建对象时原型为`constructor.prototype`
 * 使用`Object.create()`方法创建对象时原型为指定的原型
+
+![object prototype](https://raw.githubusercontent.com/wchaochao/images/master/gitbook-javascript-grammar/prototype.png)

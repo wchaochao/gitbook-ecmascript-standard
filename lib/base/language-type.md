@@ -27,21 +27,21 @@ undefined
 
 ```javascript
 // 变量被声明但未赋值
-var i; // undefined
+let i // undefined
 
 // 不存在的对象属性
-var o = {};
+let o = {}
 console.log(o.p) // undefined
 
 // 没有实参传入的形参
 function f(x) {
-  console.log(x);
+  console.log(x)
 }
-f(); // undefined
+f() // undefined
 
 // 函数无返回值, 默认返回undefined
 function f() {}
-var a = f(); // undefined
+var a = f() // undefined
 ```
 
 ## Null类型

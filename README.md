@@ -1,4 +1,4 @@
-# ECMAScript规范系列
+# ECMAScript5.1规范系列
 
 标签（空格分隔）： ECMAScript规范
 

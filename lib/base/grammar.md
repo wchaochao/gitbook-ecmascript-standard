@@ -177,14 +177,9 @@ Token ::
   StringLiteral // 字符串字面量
 ```
 
-## 标识符
-
-非保留字的标识符名
+## 标识符名
 
 ```
-Identifier :: // 标识符
-  IdentifierName but not ReservedWord // 非保留字的标识符名
-
 IdentifierName :: // 标识符名
   IdentifierStart // 标识符开头字符
   IdentifierName IdentifierPart // 标识符开头字符 + 标识符字符
@@ -217,6 +212,15 @@ UnicodeCombiningMark :: // Unicode结合符
 
 UnicodeConnectorPunctuation :: // Unicode连接符
   any character in the Unicode category “Connector punctuation (Pc)”
+```
+
+## 标识符
+
+非保留字的标识符名
+
+```
+Identifier :: // 标识符
+  IdentifierName but not ReservedWord // 非保留字的标识符名
 ```
 
 ## 保留字
