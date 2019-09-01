@@ -32,8 +32,8 @@ obj.defineProperty('a', {
 
 | 属性描述 | 类型 | 默认值 | 描述 |
 | --- | --- | --- | --- |
-| [[Get]] | Function \| Undefined | undefined | 获取属性时执行的函数，参数为空，返回值为属性值 |
-| [[Set]] | Function \| Undefined | undefined | 设置属性时执行的函数，参数为设置的值 |
+| [[Get]] | Function &#124; Undefined | undefined | 获取属性时执行的函数，参数为空，返回值为属性值 |
+| [[Set]] | Function &#124; Undefined | undefined | 设置属性时执行的函数，参数为设置的值 |
 | [[Enumerable]] | Boolean | false | 属性是否可枚举，`for/in, Object.keys, JSON.stringify`中遍历可枚举属性 |
 | [[Configurable]] | Boolean | false | 属性是否可配置，为false时属性不可删除、其他属性描述一般不能修改 |
 
@@ -56,12 +56,12 @@ obj.defineProperty('a', {
 
 | 内部属性 | 类型 | 描述 |
 | --- | --- | --- |
-| [[Class]] | String | 对象种类 |
-| [[Prototype]] | Object \| Null | 对象的原型<br/>原型的数据属性会被继承，用于[[Get]]<br/>原型的访问器属性会被继承，用于[[Get]]和[[Put]] |
+| [[Class]] | String | 对象类型 |
+| [[Prototype]] | Object &#124; Null | 对象的原型<br/>原型的数据属性会被继承，用于[[Get]]<br/>原型的访问器属性会被继承，用于[[Get]]和[[Put]] |
 | [[Extensible]] | Boolean | 对象是否可扩展，为false时不可添加属性、不可修改[[Class]]和[[Prototype]] |
-| [[GetOwnProperty]] | (propertyName: String) => Property Descriptor \| Undefined | 获取自身属性的属性描述符 |
+| [[GetOwnProperty]] | (propertyName: String) => Property Descriptor &#124; Undefined | 获取自身属性的属性描述符 |
 | [[DefineOwnProperty]] | (propertyName: String, value: Property Descriptor, flag: Boolean) | 设置自身属性的属性描述符, flag控制错误处理 |
-| [[GetProperty]] | (propertyName: String) => Property Descriptor \| Undefined | 获取自身属性或继承属性的属性描述符 |
+| [[GetProperty]] | (propertyName: String) => Property Descriptor &#124; Undefined | 获取自身属性或继承属性的属性描述符 |
 | [[HasProperty]] | (propertyName: String) => Boolean | 是否是自身属性或继承属性 |
 | [[Get]] | (propertyName: String) => any | 获取自身属性或继承属性的属性值 |
 | [[CanPut]] | (propertyName: String) => Boolean | 能否设置属性 |
@@ -76,16 +76,16 @@ obj.defineProperty('a', {
 ```javascript
 /*
  * 非自身属性，返回undefined
- * 自身属性，将属性的属性描述对象转换为对应的属性描述符
+ * 自身属性，返回相应的数据属性描述符或访问器属性描述符
  */
-if (!O.hasOwnProperty(P)) {
+if (!HasOwnProperty(O, P)) {
   return undefined
 }
 
 let desc = new Property Descriptor()
-let obj = Object.getOwnPropertyDescriptor(O, P)
+let obj = GetOwnPropertyDescriptor(O, P)
 
-if (obj.hasOwnProperty('value')) {
+if (HasOwnProperty(obj, 'value')) {
   desc.[[Value]] = obj.value
   desc.[[Writable]] = obj.writable
 } else {
@@ -162,8 +162,8 @@ if (current === undefined) {
     Reject
   } else {
     if (IsGenericDescriptor(Desc) || IsDataDescriptor(Desc)) {
-      Object.defineProperty(O, P, {
-        [[Value]]: Desc.Value !== empty ? Desc.Value : undefined,
+      CreateOwnProperty(O, P, {
+        [[Value]]: IsPresent(Desc.[[Value]]) ? Desc.Value : undefined,
         [[Writable]]: Desc.Writable !== empty ? Desc.Writable : false,
         [[Enumerable]]: Desc.Enumerable !== empty ? Desc.Enumerable : false,
         [[Configurable]]: Desc.Configurable !== empty ? Desc.Configurable : false
@@ -658,7 +658,7 @@ o.[[DefaultValue]]() // 1
 | [[BoundThis]] | any | 通过Function.prototype.bind方法创建的函数绑定的this值（Function对象） |
 | [[BoundArguments]] | List of any | 通过Function.prototype.bind方法创建的函数绑定的参数值（Function对象） |
 | [[Construct]] | (argList: List of any) => Object | 构建实例对象，通过new调用（Function对象） |
-| [[Call]] | (thisArg: any, argList: List of any) => any \| Reference | 函数调用，通过()调用（Function对象） |
+| [[Call]] | (thisArg: any, argList: List of any) => any &#124; Reference | 函数调用，通过()调用（Function对象） |
 | [[HasInstance]] | (instance: any) => Boolean | 是否是构造器的实例（Function对象） |
 | [[Match]] | (str: String, index: Number) => MatchResult | 正则匹配（RegExp对象） |
 | [[ParameterMap]] | Object | 共享的形参（Arguments对象） |
