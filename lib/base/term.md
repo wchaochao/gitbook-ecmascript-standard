@@ -11,7 +11,7 @@
 ### 全局中
 
 ```javascript
-"use strict"; // 在代码中间时不起作用
+'use strict'; // 在代码中间时不起作用
 
 // statement
 ```
@@ -20,7 +20,7 @@
 
 ```javascript
 function foo(){
-  "use strict"; // 在函数代码中间时不起作用
+  'use strict'; // 在函数代码中间时不起作用
 
   // statement
 }
@@ -39,14 +39,14 @@ eval('"use strict"; var a = 2;')
 
 ```javascript
 // 存储值
-var a = 1;
-var b = 1;
-console.log(a === b); // true
+let a = 1
+let b = 1
+console.log(a === b) // true
 
 // 存储引用
-var c = {}
-var d = {}
-console.log(c === d); // false
+let c = {}
+let d = {}
+console.log(c === d) // false
 ```
 
 ## 运算符
@@ -63,7 +63,7 @@ console.log(c === d); // false
 
 * 空语句：`;`
 * 单语句：以分号结尾，不加分号时按规则自动插入分号
-* 多语句：组合到BlockStatement中
+* 多语句：组合到代码块`{statement}`中
 
 ## 函数
 
