@@ -136,16 +136,16 @@ Property Descriptor {
 ```javascript
 /*
  * 非自身属性，添加属性
- *     O不可扩展，根据Throw决定是否抛出TypeError
- *     O可扩展，根据Desc添加数据属性或访问器属性
+ *    O不可扩展，根据Throw决定是否抛出TypeError或返回false
+ *    O可扩展，根据Desc添加数据属性或访问器属性，返回true
  * 自身属性，修改属性的属性描述符
- *     能修改，用Desc里的属性描述符特性覆盖自身的
- *     不能修改，根据Throw决定是否抛出TypeError
- *        自身属性的Configurable为false时
- *            Configurable、Enumberable不能修改
- *            不能由一种属性描述符改为另一种属性描述符
- *            数据属性描述符Writable为false时, Writable和Value都不能修改
- *           访问器属性描述符的Get和Set不能修改
+ *   能修改，用Desc里的属性描述符特性覆盖自身的，返回true
+ *   不能修改，根据Throw决定是否抛出TypeError或返回false
+ *      自身属性的[[Configurable]]为false时
+ *          [[Configurable]]、[[Enumberable]]不能修改
+ *          不能由一种属性描述符改为另一种属性描述符
+ *          数据属性描述符[[Writable]]为[[false]]时, [[Writable]]和[[Value]]都不能修改
+ *          访问器属性描述符的[[Get]]和Set]]不能修改
  */
 Reject:
   if (Throw) {
@@ -163,17 +163,17 @@ if (current === undefined) {
   } else {
     if (IsGenericDescriptor(Desc) || IsDataDescriptor(Desc)) {
       CreateOwnProperty(O, P, {
-        [[Value]]: IsPresent(Desc.[[Value]]) ? Desc.Value : undefined,
-        [[Writable]]: Desc.Writable !== empty ? Desc.Writable : false,
-        [[Enumerable]]: Desc.Enumerable !== empty ? Desc.Enumerable : false,
-        [[Configurable]]: Desc.Configurable !== empty ? Desc.Configurable : false
+        [[Value]]: IsPresent(Desc.[[Value]]) ? Desc.[[Value]] : undefined,
+        [[Writable]]: IsPresent(Desc.[[Writable]]) ? [[Desc.Writable]] : false,
+        [[Enumerable]]: IsPresent(Desc.[[Enumerable]]) ? [[Desc.Enumerable]] : false,
+        [[Configurable]]: IsPresent(Desc.[[Configurable]]) ? [[Desc.Configurable]] : false
       })
     } else {
-      Object.defineProperty(O, P, {
-        [[Get]]: Desc.Get !== empty ? Desc.Get : undefined,
-        [[Set]]: Desc.Set !== empty ? Desc.Set : undefined,
-        [[Enumerable]]: Desc.Enumerable !== empty ? Desc.Enumerable : false,
-        [[Configurable]]: Desc.Configurable !== empty ? Desc.Configurable : false
+      CreateOwnProperty(O, P, {
+        [[Get]]: IsPresent(Desc.[[Get]]) ? [[Desc.Get]] : undefined,
+        [[Set]]: IsPresent(Desc.[[Set]]) ? [[Desc.Set]] : undefined,
+        [[Enumerable]]: IsPresent(Desc.[[Enumerable]]) ? Desc.[[Enumerable]] : false,
+        [[Configurable]]: IsPresent(Desc.[[Configurable]]) ? Desc.[[Configurable]] : false
       })
     }
     return true
@@ -184,21 +184,21 @@ if (current.[[Configurable]] === false) {
   let invalid = false
   if (Desc.[[Configurable]] === true) {
     invalid = true
-  } else if (Desc.[[Enumerable]] !== empty && Desc.[[Enumerable]] !== current.[[Enumerable]]) {
+  } else if (IsPresent(Desc.[[Enumerable]]) && Desc.[[Enumerable]] !== current.[[Enumerable]]) {
     invalid = true
   } else if (IsGenericDescriptor(Desc)) {
   } else if (IsDataDescriptor(Desc) !== IsDataDescriptor(current)) {
     invalid = true
   } else if (IsDataDescriptor(current)) {
     if (current.[[Writable]] === false) {
-      if (Desc.[[Writable]] === true || !SameValue(current.[[Value]], Desc.[[Value]])) {
+      if (Desc.[[Writable]] === true || (IsPresent(Desc.[[Value]]) && !SameValue(current.[[Value]], Desc.[[Value]]))) {
         invalid = true
       }
     }
   } else {
-    if (Desc.[[Get]] !== empty && !SameValue(current.[[Get]], Desc.[[Get]])) {
+    if (IsPresent(Desc.[[Get]]) && !SameValue(current.[[Get]], Desc.[[Get]])) {
       invalid = true
-    } else if (Desc.[[Set]] !== empty && !SameValue(current.[[Set]], Desc.[[Set]])) {
+    } else if (IsPresent(Desc.[[Set]]) && !SameValue(current.[[Set]], Desc.[[Set]])) {
       invalid = true
     }
   }
@@ -208,15 +208,21 @@ if (current.[[Configurable]] === false) {
   }
 }
 
-current.[[Enumerable]] = Desc.Enumerable !== empty ? Desc.Enumerable : current.[[Enumerable]]
-current.[[Configurable]] = Desc.Configurable !== empty ? Desc.Configurable : current.[[Configurable]]
+current.[[Enumerable]] = IsPresent(Desc.[[Enumerable]]) ? Desc.[[Enumerable]] : current.[[Enumerable]]
+current.[[Configurable]] = IsPresent(Desc.[[Configurable]]) ? Desc.[[Configurable]] : current.[[Configurable]]
 
 if (IsDataDescriptor(Desc)) {
-  current.[[Value]] = Desc.Value !== empty ? Desc.Value : current.[[Value]]
-  current.[[Writable]] = Desc.Writable !== empty ? Desc.Writable : current.[[Writable]]
+  if (!IsDataDescriptor(current)) {
+    convertToAccessorDesscriptor(current)
+  }
+  current.[[Value]] = IsPresent(Desc.Value) ? Desc.Value : current.[[Value]]
+  current.[[Writable]] = IsPresent(Desc.Writable) ? Desc.Writable : current.[[Writable]]
 } else if (IsAccessorDescriptor(Desc)) {
-  current.[[Get]] = Desc.Value !== empty ? Desc.Value : current.[[Value]]
-  current.[[Set]] = Desc.Set !== empty ? Desc.Set : current.[[Set]]
+  if (!IsAccessorDescriptor(current)) {
+    convertToDataDesscriptor(current)
+  }
+  current.[[Get]] = IsPresent(Desc.Value) ? Desc.Value : current.[[Value]]
+  current.[[Set]] = IsPresent(Desc.Set) ? Desc.Set : current.[[Set]]
 }
 
 return true
@@ -358,8 +364,10 @@ o.[[HasProperty]]('toString') // true
  * 获取自身属性或继承属性的属性描述符
  *     不存在，返回undefined
  *     存在，根据描述符类型返回属性值
- *         数据属性，返回[[Value]]
- *         访问器属性，调用[[Get]]方法
+ *         数据属性，返回[[Value]]值
+ *         访问器属性
+ *             [Get]]不存在，返回undefined
+ *             [[Get]]存在，调用[[Get]]方法，this为对象，参数为空
  */
 let desc = O.[[GetProperty]](P)
 
@@ -520,7 +528,7 @@ o.[[Put]]('a', 3, true) // {a: 3, set p}
 o.[[Put]]('p', 3, true) // {a: 3, set p}
 
 // 继承的数据属性，添加属性
-o.[[Put]]('toString', 5, true) // {a: 1, toString: 5}
+o.[[Put]]('toString', 5, true) // {a: 1, toString: 5, set p}
 ```
 
 ### [[Delete]] (P, Throw)
@@ -530,9 +538,9 @@ o.[[Put]]('toString', 5, true) // {a: 1, toString: 5}
 ```javascript
 /*
  * 非自身属性，直接返回true
- * 自身属性，判断是否可删除
- *     可删除，删除属性并返回true
- *     不可删除
+ * 自身属性，判断是否可配置
+ *     可配置，删除属性并返回true
+ *     不可配置
  *         Throw为true抛出TypeError
  *         Throw为false返回false
  */
@@ -541,7 +549,7 @@ let desc = O.[[GetOwnProperty]](P)
 if (desc === undefined) {
   return true
 } else if (desc.[[Configurable]]) {
-  delete O.P
+  RemoveOwnProperty(O, P)
   return true
 } else {
   if (Throw) {
@@ -566,10 +574,10 @@ Object.defineProperty(o, 'b', {
 // 非自身属性
 o.[[Delete]]('c', true) // true
 
-// 可删除的自身属性
+// 可配置的自身属性
 o.[[Delete]]('a', true) // true
 
-// 不可删除的自身属性
+// 不可配置的自身属性
 o.[[Delete]]('b', true) // TypeError
 ```
 
